@@ -339,7 +339,13 @@ def train(train_data, test_data=None):
         fp.write("loss={:.5f} f1_micro={:.5f} f1_macro={:.5f}".
                  format(val_cost, val_f1_mic, val_f1_mac))
 
-    # sess.run([model.outputs1], feed_dict=feed_dict)[0].shape
+    adj_info_ph = tf.placeholder(tf.int32, shape=minibatch.adj.shape)
+    adj_info = tf.Variable(adj_info_ph, trainable=False, name="adj_info")
+
+    # print(sess.run([model.outputs1], feed_dict={adj_info_ph: minibatch.adj})[0].shape) TODO: Bug: Get embedding from minibatch.adj
+    # embedding from feed_dict
+    print(sess.run([model.outputs1], feed_dict=feed_dict)[0].shape)
+
 
 def main(argv=None):
     print("Loading training data..")
@@ -349,7 +355,6 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
-
     FLAGS.train_prefix = "/Volumes/DATA/workspace/aus/GraphSAGE/example_data/ppi"
     FLAGS.model = "graphsage_mean"
     FLAGS.sigmoid = True
