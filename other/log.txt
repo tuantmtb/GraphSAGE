@@ -1,0 +1,27 @@
+val_nodes length: 1825
+test_node length: 3214
+no_train_nodes_set = val + test = 5039
+train_nodes length: 9716
+
+nodes = 14755
+
+adj = [14755,128]
+
+flags('samples_1', 25, 'number of samples in layer 1')
+flags('samples_2', 10, 'number of samples in layer 2')
+flags.DEFINE_integer('samples_3', 0, 'number of users samples in layer 3. (Only for mean model)')
+
+flags.DEFINE_integer('dim_1', 128, 'Size of output dim (final is 2x this, if using concat)')
+flags.DEFINE_integer('dim_2', 128, 'Size of output dim (final is 2x this, if using concat)')
+
+samples=[Tensor,Tensor,Tensor]
+suport_sizes=[1,10,250]
+num_samples = [25,10]
+dims=[50,128,128]
+
+output1 = Tensor(256)
+
+agg1 = [input = 50 -> output = 128]
+agg2 = [input = 256 -> output = 256]
+node_pred = Dense[input = 256-> output = 121]
+node_preds = Tensor(?,121)
