@@ -345,6 +345,17 @@ def train(train_data, test_data=None):
     # print(sess.run([model.outputs1], feed_dict={adj_info_ph: minibatch.adj})[0].shape) TODO: Bug: Get embedding from minibatch.adj
     # embedding from feed_dict
     print(sess.run([model.outputs1], feed_dict=feed_dict)[0].shape)
+    # minibatch.node_val_feed_dict(14755)[1].shape
+
+    # embedding
+    feed_dict_all = dict()
+    feed_dict_all[placeholders['batch']] = minibatch.nodes
+    feed_dict_all[placeholders['batch_size']] = 14755
+    feed_dict_all[placeholders['dropout']] = 0
+    feed_dict_all[placeholders['labels']] = minibatch.node_val_feed_dict(14755)[1]
+    embedding_matrix = sess.run([model.outputs1], feed_dict=feed_dict_all)[0]
+    output_folder_path = '/Volumes/DATA/workspace/aus/GraphSAGE/output'
+    np.savetxt(output_folder_path + '/embedding.txt', embedding_matrix)
 
 
 def main(argv=None):
