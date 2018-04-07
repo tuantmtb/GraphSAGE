@@ -342,7 +342,7 @@ def train(train_data, test_data=None):
     adj_info_ph = tf.placeholder(tf.int32, shape=minibatch.adj.shape)
     adj_info = tf.Variable(adj_info_ph, trainable=False, name="adj_info")
 
-    # print(sess.run([model.outputs1], feed_dict={adj_info_ph: minibatch.adj})[0].shape) TODO: Bug: Get embedding from minibatch.adj
+    # print(sess.run([model.outputs1], feed_dict={adj_info_ph: minibatch.adj})[0].shape)
     # embedding from feed_dict
     # print(sess.run([model.outputs1], feed_dict=feed_dict)[0].shape)
     # minibatch.node_val_feed_dict(14755)[1].shape
@@ -362,13 +362,14 @@ def train(train_data, test_data=None):
 
 def main(argv=None):
     print("Loading training data..")
-    train_data = load_data(FLAGS.train_prefix)
+    train_data = load_data(FLAGS.train_prefix, load_walks=True)
     print("Done loading training data..")
     train(train_data)
 
 
 if __name__ == '__main__':
-    FLAGS.train_prefix = "/Volumes/DATA/workspace/aus/GraphSAGE/example_data/ppi"
+    # FLAGS.train_prefix = "/Volumes/DATA/workspace/aus/GraphSAGE/example_data/ppi"
+    FLAGS.train_prefix = "/Volumes/DATA/AUS/2018/code/git/GraphSAGE/example_data/ppi"
     FLAGS.model = "graphsage_mean"
     FLAGS.sigmoid = True
     FLAGS.epochs = 5
