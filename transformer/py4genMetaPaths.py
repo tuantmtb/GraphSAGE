@@ -164,12 +164,14 @@ def transform_graphsage(config):
     G_data['links'] = []
     nodes = []
     edges = []
+    class_map = dict()
     for paper_id in mpg.paper_conf:
         nodes.append(paper_id)
         edges.append({paper_id: mpg.paper_conf[paper_id]})
 
     for conf_id in mpg.id_conf:
         nodes.append(conf_id)
+
     for author_id in mpg.id_author:
         nodes.append(author_id)
 
@@ -182,6 +184,18 @@ def transform_graphsage(config):
         # print(node_object)
         G_data['nodes'].append(node_object)
         index += 1
+
+    # class_map
+    for paper_id in mpg.paper_conf:
+        id = id_map[int(paper_id)]
+        class_map[id] = [0, 0, 1] #paper
+
+    for conf_id in mpg.id_conf:
+        id = id_map[int(conf_id)]
+        class_map[id] = [0, 1, 0] #conf
+    for author_id in mpg.id_author:
+        id = id_map[int(author_id)]
+        class_map[id] = [1, 0, 1] #author
 
     # insert all edge
     for pap_au in mpg.paper_author:
@@ -203,6 +217,9 @@ def transform_graphsage(config):
 
     with io.open(config['output_dbis_data_folder'] + 'cora-id_map.json', 'w', encoding="utf-8") as f:
         f.write(unicode(json.dumps(id_map, ensure_ascii=False)))
+
+    with io.open(config['output_dbis_data_folder'] + 'cora-class_map.json', 'w', encoding="utf-8") as f:
+        f.write(unicode(json.dumps(class_map, ensure_ascii=False)))
 
     walks = mpg.generate_random_aca(outfilename, numwalks, walklength)
 
