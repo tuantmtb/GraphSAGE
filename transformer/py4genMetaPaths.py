@@ -219,14 +219,14 @@ def transform_graphsage(config):
     mpg.id_map = id_map
 
     # export file
-    # with io.open(config['output_dbis_data_folder'] + 'cora-G.json', 'w', encoding="utf-8") as f:
-    #     f.write(unicode(json.dumps(G_data, ensure_ascii=False)))
+    with io.open(config['output_dbis_data_folder'] + 'cora-G.json', 'w', encoding="utf-8") as f:
+        f.write(unicode(json.dumps(G_data, ensure_ascii=False)))
 
     with io.open(config['output_dbis_data_folder'] + 'cora-id_map.json', 'w', encoding="utf-8") as f:
         f.write(unicode(json.dumps(id_map_gen, ensure_ascii=False)))
 
-    # with io.open(config['output_dbis_data_folder'] + 'cora-class_map.json', 'w', encoding="utf-8") as f:
-    #     f.write(unicode(json.dumps(class_map, ensure_ascii=False)))
+    with io.open(config['output_dbis_data_folder'] + 'cora-class_map.json', 'w', encoding="utf-8") as f:
+        f.write(unicode(json.dumps(class_map, ensure_ascii=False)))
 
     walks = mpg.generate_random_aca(outfilename, numwalks, walklength)
 
