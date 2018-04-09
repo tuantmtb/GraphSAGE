@@ -177,9 +177,21 @@ def transform_graphsage(config):
 
     id_map = dict()
     index = 0
+    val_count = 0
+    test_count = 0
+    train_count = 0
+
     for node in nodes:
-        # node_object = {'feature': [], 'id': int(node), 'label': [], 'test': False, 'val': False}
-        node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': False}
+        val = random.randrange(10)
+        if val == 1:
+            node_object = {'feature': [], 'id': index, 'label': [], 'test': True, 'val': False}
+            test_count += 1
+        elif (val == 2):
+            node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': True}
+            val_count += 1
+        else:
+            node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': True}
+            train_count += 1
         id_map[int(node)] = index
         if (node == '72902'):
             print('72902', index)
@@ -188,7 +200,10 @@ def transform_graphsage(config):
         # print(node_object)
         G_data['nodes'].append(node_object)
         index += 1
-
+    print('sum count nodes= ', len(nodes))
+    print('test nodes = ', test_count)
+    print('val nodes = ', val_count)
+    print('train nodes = ', train_count)
     # class_map
     for paper_id in mpg.paper_conf:
         id = id_map[int(paper_id)]
