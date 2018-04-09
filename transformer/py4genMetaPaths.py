@@ -145,7 +145,7 @@ def main():
 
 
 def transform_graphsage(config):
-    dirpath = "/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis_data/net_dbis"
+    dirpath = "/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis_data/new_net_dbis"
     numwalks = 5
     walklength = 5
     outfilename = '/Users/tuantmtb/Documents/AUS/metapath2vec/output/out.txt'
@@ -166,13 +166,19 @@ def transform_graphsage(config):
     edges = []
     class_map = dict()
     for paper_id in mpg.paper_conf:
+        # if (paper_id in nodes):
+        #     print('dup', paper_id)
         nodes.append(paper_id)
         edges.append({paper_id: mpg.paper_conf[paper_id]})
 
     for conf_id in mpg.id_conf:
+        # if (conf_id in nodes):
+        #     print('dup', conf_id)
         nodes.append(conf_id)
 
     for author_id in mpg.id_author:
+        # if (author_id in nodes):
+        #     print('dup', author_id)
         nodes.append(author_id)
 
     id_map = dict()
@@ -193,10 +199,6 @@ def transform_graphsage(config):
             node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': True}
             train_count += 1
         id_map[int(node)] = index
-        if (node == '72902'):
-            print('72902', index)
-        if (node == '89370'):
-            print('89370', index)
         # print(node_object)
         G_data['nodes'].append(node_object)
         index += 1
@@ -207,14 +209,19 @@ def transform_graphsage(config):
     # class_map
     for paper_id in mpg.paper_conf:
         id = id_map[int(paper_id)]
-        class_map[id] = [0, 0, 1]  # paper
+        # class_map[id] = [0, 0, 1]  # paper
+        class_map[id] = [1]  # paper
+
+    for author_id in mpg.id_author:
+        id = id_map[int(author_id)]
+        # class_map[id] = [1, 0, 1]  # author
+        class_map[id] = [2]  # author
 
     for conf_id in mpg.id_conf:
         id = id_map[int(conf_id)]
-        class_map[id] = [0, 1, 0]  # conf
-    for author_id in mpg.id_author:
-        id = id_map[int(author_id)]
-        class_map[id] = [1, 0, 1]  # author
+        # class_map[id] = [0, 1, 0]  # conf
+        class_map[id] = [3]  # conf
+
 
     # insert all edge
     for pap_au in mpg.paper_author:
@@ -234,18 +241,18 @@ def transform_graphsage(config):
     mpg.id_map = id_map
 
     # export file
-    with io.open(config['output_dbis_data_folder'] + 'cora-G.json', 'w', encoding="utf-8") as f:
+    with io.open(config['output_dbis_data_folder'] + 'dbis-G.json', 'w', encoding="utf-8") as f:
         f.write(unicode(json.dumps(G_data, ensure_ascii=False)))
 
-    with io.open(config['output_dbis_data_folder'] + 'cora-id_map.json', 'w', encoding="utf-8") as f:
+    with io.open(config['output_dbis_data_folder'] + 'dbis-id_map.json', 'w', encoding="utf-8") as f:
         f.write(unicode(json.dumps(id_map_gen, ensure_ascii=False)))
 
-    with io.open(config['output_dbis_data_folder'] + 'cora-class_map.json', 'w', encoding="utf-8") as f:
+    with io.open(config['output_dbis_data_folder'] + 'dbis-class_map.json', 'w', encoding="utf-8") as f:
         f.write(unicode(json.dumps(class_map, ensure_ascii=False)))
 
     walks = mpg.generate_random_aca(outfilename, numwalks, walklength)
 
-    # np.savetxt(config['output_dbis_data_folder'] + 'cora-walks.txt', mpg.walks, fmt='%d')
+    np.savetxt(config['output_dbis_data_folder'] + 'dbis-walks.txt', mpg.walks, fmt='%d')
 
     G = json_graph.node_link_graph(G_data)
 
