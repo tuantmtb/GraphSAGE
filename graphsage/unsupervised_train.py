@@ -55,7 +55,10 @@ flags.DEFINE_integer('gpu', 1, "which gpu to use.")
 flags.DEFINE_integer('print_every', 50, "How often to print training info.")
 flags.DEFINE_integer('max_total_steps', 10 ** 10, "Maximum total number of iterations")
 
-os.environ["CUDA_VISIBLE_DEVICES"] = str(FLAGS.gpu)
+if FLAGS.gpu == -1:
+    os.environ["CUDA_VISIBLE_DEVICES"] = ""
+else:
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(FLAGS.gpu)
 
 GPU_MEM_FRACTION = 0.8
 
@@ -383,15 +386,15 @@ def train(train_data, test_data=None):
 
 def main(argv=None):
     # python -m graphsage.unsupervised_train --train_prefix dbis/dbis --model graphsage_mean --max_total_steps 5000 --epochs 100 --validate_iter 10 --neg_sample_size 5 --batch_size 128 --gpu 0
-    FLAGS.train_prefix = '/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis/dbis'
-    FLAGS.model = 'graphsage_mean'
-    FLAGS.max_total_steps = 500
-    FLAGS.epochs = 10
-    FLAGS.validate_iter = 10
-    FLAGS.neg_sample_size = 5
-    FLAGS.batch_size = 128
-    FLAGS.identity_dim = 50
-    FLAGS.gpu = 0
+    #FLAGS.train_prefix = '/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis/dbis'
+    #FLAGS.model = 'graphsage_mean'
+    #FLAGS.max_total_steps = 500
+    #FLAGS.epochs = 10
+    #FLAGS.validate_iter = 10
+    #FLAGS.neg_sample_size = 5
+    #FLAGS.batch_size = 128
+    #FLAGS.identity_dim = 50
+    #FLAGS.gpu = 0
     print("Loading training data..")
     train_data = load_data(FLAGS.train_prefix, load_walks=True)
     print("Done loading training data..")
