@@ -196,7 +196,7 @@ def transform_graphsage(config):
             node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': True}
             val_count += 1
         else:
-            node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': True}
+            node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': False}
             train_count += 1
         id_map[int(node)] = index
         # print(node_object)
