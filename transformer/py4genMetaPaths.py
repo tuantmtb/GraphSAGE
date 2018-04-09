@@ -181,6 +181,10 @@ def transform_graphsage(config):
         # node_object = {'feature': [], 'id': int(node), 'label': [], 'test': False, 'val': False}
         node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': False}
         id_map[int(node)] = index
+        if (node == '72902'):
+            print('72902', index)
+        if (node == '89370'):
+            print('89370', index)
         # print(node_object)
         G_data['nodes'].append(node_object)
         index += 1
@@ -188,14 +192,14 @@ def transform_graphsage(config):
     # class_map
     for paper_id in mpg.paper_conf:
         id = id_map[int(paper_id)]
-        class_map[id] = [0, 0, 1] #paper
+        class_map[id] = [0, 0, 1]  # paper
 
     for conf_id in mpg.id_conf:
         id = id_map[int(conf_id)]
-        class_map[id] = [0, 1, 0] #conf
+        class_map[id] = [0, 1, 0]  # conf
     for author_id in mpg.id_author:
         id = id_map[int(author_id)]
-        class_map[id] = [1, 0, 1] #author
+        class_map[id] = [1, 0, 1]  # author
 
     # insert all edge
     for pap_au in mpg.paper_author:
@@ -208,28 +212,38 @@ def transform_graphsage(config):
         edge_object = {'source': source_index, 'target': target_index, 'test_removed': False,
                        'train_removed': False}
         G_data['links'].append(edge_object)
+    id_map_gen = dict()
+    for id in range(len(nodes)):
+        id_map_gen[id] = int(id)
 
     mpg.id_map = id_map
 
     # export file
-    with io.open(config['output_dbis_data_folder'] + 'cora-G.json', 'w', encoding="utf-8") as f:
-        f.write(unicode(json.dumps(G_data, ensure_ascii=False)))
+    # with io.open(config['output_dbis_data_folder'] + 'cora-G.json', 'w', encoding="utf-8") as f:
+    #     f.write(unicode(json.dumps(G_data, ensure_ascii=False)))
 
     with io.open(config['output_dbis_data_folder'] + 'cora-id_map.json', 'w', encoding="utf-8") as f:
-        f.write(unicode(json.dumps(id_map, ensure_ascii=False)))
+        f.write(unicode(json.dumps(id_map_gen, ensure_ascii=False)))
 
-    with io.open(config['output_dbis_data_folder'] + 'cora-class_map.json', 'w', encoding="utf-8") as f:
-        f.write(unicode(json.dumps(class_map, ensure_ascii=False)))
+    # with io.open(config['output_dbis_data_folder'] + 'cora-class_map.json', 'w', encoding="utf-8") as f:
+    #     f.write(unicode(json.dumps(class_map, ensure_ascii=False)))
 
     walks = mpg.generate_random_aca(outfilename, numwalks, walklength)
 
-    np.savetxt(config['output_dbis_data_folder'] + 'cora-walks.txt', mpg.walks, fmt='%d')
+    # np.savetxt(config['output_dbis_data_folder'] + 'cora-walks.txt', mpg.walks, fmt='%d')
 
     G = json_graph.node_link_graph(G_data)
 
+    index = 0
+    for node in nodes:
+        if node == '72902' or node == '89370':
+            # if node == '89370' :
+            print(node, index)
+        index += 1
+
     print("ok")
     # todo: feats, class_map
-    return G, id_map, walks
+    return G, id_map, walks, class_map
 
 
 if __name__ == "__main__":

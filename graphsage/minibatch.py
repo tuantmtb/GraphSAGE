@@ -83,6 +83,11 @@ class EdgeMinibatchIterator(object):
             neighbors = np.array([self.id2idx[neighbor] 
                 for neighbor in self.G.neighbors(nodeid)
                 if (not self.G[nodeid][neighbor]['train_removed'])])
+
+            # for neighbor in self.G.neighbors(nodeid):
+            #     if (not self.G[nodeid][neighbor]['train_removed'])]):
+            #         self.id2idx[neighbor]
+
             deg[self.id2idx[nodeid]] = len(neighbors)
             if len(neighbors) == 0:
                 continue
