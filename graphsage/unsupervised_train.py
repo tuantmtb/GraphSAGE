@@ -121,6 +121,7 @@ def save_val_embeddings(sess, model, minibatch_iter, size, out_dir, mod=""):
         os.makedirs(out_dir)
     val_embeddings = np.vstack(val_embeddings)
     np.save(out_dir + name + mod + ".npy", val_embeddings)
+    np.savetxt(out_dir + name + mod + ".tsv",  val_embeddings, delimiter='\t')
     with open(out_dir + name + mod + ".txt", "w") as fp:
         fp.write("\n".join(map(str, nodes)))
 
