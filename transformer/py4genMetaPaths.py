@@ -22,6 +22,10 @@ class MetaPathGenerator:
         self.walks = []
         self.id_map = dict()
 
+        self.title_author = dict()
+        self.title_conf = dict()
+        self.title_paper = dict()
+
     def read_data(self, dirpath):
         with open(dirpath + "/id_author.txt") as adictfile:
             for line in adictfile:
@@ -62,6 +66,14 @@ class MetaPathGenerator:
                         self.conf_paper[c] = []
                     self.conf_paper[c].append(p)
 
+        with open(dirpath + "/paper.txt") as pcfile:
+            for line in pcfile:
+                toks = line.strip().split("\t")
+                if len(toks) == 2:
+                    p, c = toks[0], toks[1]
+                    self.title_paper[p] = c
+        self.title_conf = self.id_conf
+        self.title_author = self.id_author
         sumpapersconf, sumauthorsconf = 0, 0
         conf_authors = dict()
         for conf in self.conf_paper:
@@ -201,6 +213,13 @@ def transform_graphsage(config):
         else:
             node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': False}
             train_count += 1
+        if(node[0] == '1'):
+            node_object.update({'term': str(unicode(mpg.title_paper[str(node)],errors='ignore'))})
+        elif(node[0] == '2'):
+            node_object.update({'term': str(unicode(mpg.title_author[str(node)],errors='ignore'))})
+        elif(node[0] == '3'):
+            node_object.update({'term': str(unicode(mpg.title_conf[str(node)],errors='ignore'))})
+
         id_map[int(node)] = index
         # print(node_object)
         node_objects.append(node_object)
