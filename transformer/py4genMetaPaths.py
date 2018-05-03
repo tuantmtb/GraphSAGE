@@ -140,15 +140,17 @@ def main():
     # mpg = MetaPathGenerator()
     # mpg.read_data(dirpath)
     # mpg.generate_random_aca(outfilename, numwalks, walklength)
-    config = {'output_dbis_data_folder': '/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis_data/'}
+    # config = {'output_dbis_data_folder': '/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis_data/'}
+    config = {'output_dbis_data_folder': '/Volumes/DATA/workspace/aus/GraphSAGE/dbis_data_test/'}
     transform_graphsage(config=config)
 
 
 def transform_graphsage(config):
-    dirpath = "/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis_data/new_net_dbis"
+    # dirpath = "/Volumes/DATA/AUS/2018/code/git/GraphSAGE/dbis_data/new_net_dbis"
+    dirpath = "/Volumes/DATA/workspace/aus/GraphSAGE/dbis_data_test/new_net_dbis"
     numwalks = 5
     walklength = 5
-    outfilename = '/Users/tuantmtb/Documents/AUS/metapath2vec/output/out.txt'
+    outfilename = '/Volumes/DATA/workspace/aus/GraphSAGE/dbis_data_test/output/out.txt'
     mpg = MetaPathGenerator()
     mpg.read_data(dirpath)
 
@@ -187,6 +189,7 @@ def transform_graphsage(config):
     test_count = 0
     train_count = 0
 
+    node_objects = []
     for node in nodes:
         val = random.randrange(10)
         if val == 1:
@@ -200,8 +203,10 @@ def transform_graphsage(config):
             train_count += 1
         id_map[int(node)] = index
         # print(node_object)
+        node_objects.append(node_object)
         G_data['nodes'].append(node_object)
         index += 1
+
     print('sum count nodes= ', len(nodes))
     print('test nodes = ', test_count)
     print('val nodes = ', val_count)
@@ -222,7 +227,6 @@ def transform_graphsage(config):
         # class_map[id] = [0, 1, 0]  # conf
         class_map[id] = [3]  # conf
 
-
     # insert all edge
     for pap_au in mpg.paper_author:
         edges.append({pap_au: mpg.paper_author[pap_au][0]})
@@ -240,9 +244,35 @@ def transform_graphsage(config):
 
     mpg.id_map = id_map
 
+    # set test, val, train
+    G = json_graph.node_link_graph(G_data)
+
+    for pos in range(len(G.node)):
+        first_node = G.node[pos]
+        if (first_node['test'] == True):
+            # for edge in edges:
+            for edge in G.edges(pos, False):
+                is_match = False
+                if (pos == edge[0]):
+                    id_need_set = edge[1]
+                    is_match = True
+                else:
+                    id_need_set = edge[0]
+                    is_match = True
+                if (is_match == True):
+
+                    G.node[id_need_set].update({'test': False, 'val': False})
+                    # for node in node_objects:
+                    #     if (id_need_set == node['id']):
+                    #         node.update({'test': False, 'val': False})
+    G_data_new = json_graph.node_link_data(G)
+    print ('export to file')
     # export file
-    with io.open(config['output_dbis_data_folder'] + 'dbis-G.json', 'w', encoding="utf-8") as f:
+    with io.open(config['output_dbis_data_folder'] + 'old_dbis-G.json', 'w', encoding="utf-8") as f:
         f.write(unicode(json.dumps(G_data, ensure_ascii=False)))
+
+    with io.open(config['output_dbis_data_folder'] + 'dbis-G.json', 'w', encoding="utf-8") as f:
+        f.write(unicode(json.dumps(G_data_new, ensure_ascii=False)))
 
     with io.open(config['output_dbis_data_folder'] + 'dbis-id_map.json', 'w', encoding="utf-8") as f:
         f.write(unicode(json.dumps(id_map_gen, ensure_ascii=False)))
@@ -254,14 +284,7 @@ def transform_graphsage(config):
 
     np.savetxt(config['output_dbis_data_folder'] + 'dbis-walks.txt', mpg.walks, fmt='%d')
 
-    G = json_graph.node_link_graph(G_data)
 
-    index = 0
-    for node in nodes:
-        if node == '72902' or node == '89370':
-            # if node == '89370' :
-            print(node, index)
-        index += 1
 
     print("ok")
     # todo: feats, class_map
