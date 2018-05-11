@@ -6,7 +6,11 @@ import networkx as nx
 import json, io
 import numpy as np
 from networkx.readwrite import json_graph
-
+from sets import Set
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+import nltk
+import re
 
 class MetaPathGenerator:
     def __init__(self):
@@ -195,6 +199,33 @@ def transform_graphsage(config):
         #     print('dup', author_id)
         nodes.append(author_id)
 
+
+
+
+    # insert node term
+    # todo
+    terms_all = Set()
+    # nltk.download('stopwords')
+    # nltk.download('wordnet')
+    wordnet_lemmatizer = WordNetLemmatizer()
+    for paper_title in mpg.title_paper.items():
+        string_title = " ".join(re.findall("[a-zA-Z]+", paper_title[1].lower()))
+        words = string_title.split(" ")
+        filtered_words = [wordnet_lemmatizer.lemmatize(word) for word in words if word not in stopwords.words('english')]
+        terms_all.update(filtered_words)
+
+    for paper_title in mpg.title_paper.items():
+        string_title = " ".join(re.findall("[a-zA-Z]+", paper_title[1].lower()))
+        words = string_title.split(" ")
+        filtered_words = [wordnet_lemmatizer.lemmatize(word) for word in words if
+                          word not in stopwords.words('english')]
+
+        for term in filtered_words:
+            term_id = "4" + str(list(terms_all).index(term))
+            nodes.append(term_id)
+            edges.append({paper_title[0]: term_id})
+
+
     id_map = dict()
     index = 0
     val_count = 0
@@ -213,18 +244,22 @@ def transform_graphsage(config):
         else:
             node_object = {'feature': [], 'id': index, 'label': [], 'test': False, 'val': False}
             train_count += 1
-        if(node[0] == '1'):
-            node_object.update({'term': str(unicode(mpg.title_paper[str(node)],errors='ignore'))})
-        elif(node[0] == '2'):
-            node_object.update({'term': str(unicode(mpg.title_author[str(node)],errors='ignore'))})
-        elif(node[0] == '3'):
-            node_object.update({'term': str(unicode(mpg.title_conf[str(node)],errors='ignore'))})
 
         id_map[int(node)] = index
         # print(node_object)
         node_objects.append(node_object)
         G_data['nodes'].append(node_object)
         index += 1
+        #
+        # if(node[0] == '1'):
+        #     node_object.update({'term': str(unicode(mpg.title_paper[str(node)],errors='ignore'))})
+        # elif(node[0] == '2'):
+        #     node_object.update({'term': str(unicode(mpg.title_author[str(node)],errors='ignore'))})
+        # elif(node[0] == '3'):
+        #     node_object.update({'term': str(unicode(mpg.title_conf[str(node)],errors='ignore'))})
+
+
+
 
     print('sum count nodes= ', len(nodes))
     print('test nodes = ', test_count)
@@ -245,6 +280,11 @@ def transform_graphsage(config):
         id = id_map[int(conf_id)]
         # class_map[id] = [0, 1, 0]  # conf
         class_map[id] = [3]  # conf
+
+    for term_id in mpg.id_conf:
+        id = id_map[int(term_id )]
+        # class_map[id] = [0, 1, 0]  # conf
+        class_map[id] = [4]  # conf
 
     # insert all edge
     for pap_au in mpg.paper_author:
